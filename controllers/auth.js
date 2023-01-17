@@ -28,10 +28,9 @@ const signup = async (req, res) => {
         const newUser = await User({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
+            userName: req.body.userName,
             email: req.body.email.toLowerCase(),
-            password: hashedPassword,
-            confirmPassword: hashedPassword,
-            
+            password: hashedPassword, 
         }).save();
         
         newUser.set("password", undefined);
@@ -111,6 +110,7 @@ const updateUserProfile = async (req, res) =>{
         const updateProfile = {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
+            userName: req.body.username,
             email: req.body.email,
         };
 

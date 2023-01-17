@@ -5,6 +5,7 @@ const utils = new Utils();
 const validation = joi.object({
   firstName: joi.string().min(3).required(),
   lastName: joi.string().min(3).required(),
+  userName: joi.string().min(3).required(),
   email: joi.string().email().trim(true).required(),
   password: joi.string().min(5).required(),
 });
@@ -28,7 +29,7 @@ const validateUser = async (req, res, next) => {
   };
   
   const loginValidation = joi.object({
-    email: joi.string().email().trim(true).required(),
+    userName: joi.string().required(),
     password: joi.string().min(5).required(),
   });
   
