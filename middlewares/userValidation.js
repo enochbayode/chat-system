@@ -29,7 +29,7 @@ const validateUser = async (req, res, next) => {
   };
   
   const loginValidation = joi.object({
-    userName: joi.string().required(),
+    email: joi.string().email().trim(true).required(),
     password: joi.string().min(5).required(),
   });
   

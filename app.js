@@ -25,6 +25,7 @@ app.all("*", (req, res) => {
 
 // connecting to mongodb database
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
 mongoose
   .connect(dbURI, {
     useNewUrlParser:true,
