@@ -7,11 +7,11 @@ const aauth = require('../controllers/auth');
 const {
         validateUser, 
         validateLogIn
-    } = require('../middlewares/user.validation')
+    } = require('../middlewares/userValidation')
 
-authrouter.post("/signout", aauth.logoutUser);
-authrouter.post("/signup", validateUser, aauth.signup);
-authrouter.post("/signin", validateLogIn, aauth.login);
+authrouter.post("/logout", aauth.logoutUser);
+authrouter.post("/register", validateUser, aauth.signup);
+authrouter.post("/login", validateLogIn, aauth.login);
 authrouter.put("/update-profile", auth.tokenRequired, aauth.updateUserProfile);
 
 
