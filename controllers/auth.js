@@ -1,5 +1,5 @@
 // importing the required modules
-const { User } = require("../models/users");
+const { User } = require("../models/user");
 const bcrypt = require("bcrypt");
 const { Auth } = require("../middlewares/auth");
 const { Utils } = require("../middlewares/utils");
