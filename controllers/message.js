@@ -1,21 +1,21 @@
 const { User } = require("../models/user");
 const { Message } = require("../models/message");
 const { Chat } = require("../models/chat");
-const { Utils } = require("../models/utils");
+const { Utils } = require("../middlewares/utils");
 
 // instantiating the middlewares
 const utils = new Utils();
 
 const sendMessage = async (req, res) => {
     // const sender = req.user._id;
-    const { sender, message } = req.body;
+    const { sender } = req.body;
 
     try {
         const Sender = await User.findById({ _id: sender })
-        const Conversation = await Message.find({});
+        const Conversation = await Message.find({ });
         
         if (Conversation){
-            return res.status.json({
+            return res.status(200).json({
                 status: true,
                 message: "Read previous conversion",
                 data: Conversation
@@ -28,7 +28,7 @@ const sendMessage = async (req, res) => {
         });
         await newMessage.save();
 
-        return res.status.json({
+        return res.status(200).json({
             status: true,
             message: "message sent succefully",
             data: newMessage
