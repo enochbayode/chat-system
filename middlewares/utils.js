@@ -69,6 +69,7 @@ class Utils {
       ITEM_FETCHED_FAIL: 'Items not fetched',
       ITEM_EXISTENCE_ERROR: 'Item not found',
       NO_ORDER_FOUND: 'No order found',
+      NO_MESSAGE: "No message available"
     };
   }
 
