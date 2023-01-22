@@ -11,7 +11,7 @@ const sendMessage = async (req, res) => {
     const { sender } = req.body;
 
     try {
-        const Sender = await User.findById({ _id: sender })
+        // const Sender = await User.findById({ _id: sender })
 
         const newMessage = new Message({
             ...req.body,
@@ -25,18 +25,18 @@ const sendMessage = async (req, res) => {
             data: newMessage
         });
     } catch (error) {
-        console.log(error)
-        // res.status(500).json({
-        //     status: false,
-        //     message: "something went wrong.",
-        //     error: utils.getMessage("UNKNOWN_ERROR"),
-        // });
+        // console.log(error)
+        res.status(500).json({
+            status: false,
+            message: "something went wrong.",
+            error: utils.getMessage("UNKNOWN_ERROR"),
+        });
     }
     
 }
 
 const getLastMessage = async(req, res) => {
-    const { sender } = req.body;
+    
     try {
          const Conversation = await Message.find({ });
         
