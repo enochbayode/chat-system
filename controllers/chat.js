@@ -1,6 +1,6 @@
 const { User } = require("../models/user");
 const { Message } = require("../models/message");
-const { Chat } = require("../models/chat");
+const { Conversation } = require("../models/conversation");
 const { Utils } = require("../middlewares/utils");
 
 // instantiating the middlewares

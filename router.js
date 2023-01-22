@@ -1,11 +1,11 @@
 const { mainrouter } = require('./routes/main');
 const { authrouter } = require('./routes/auth');
-const { messagerouter } = require("./routes/message");
+const { chatrouter } = require("./routes/chat");
 
 
 module.exports = (app) => {
   app.use(mainrouter);
   app.use("/user", authrouter);
-  app.use("/msg", messagerouter);
+  app.use("/chat", chatrouter);
 
 };
