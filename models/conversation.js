@@ -5,9 +5,10 @@ const conversationSchema = mongoose.Schema(
     _id: mongoose.Schema.Types.ObjectId,
     reciever: {
       type: mongoose.Schema.Types.ObjectId,
-      require: true,
+      required: true,
       ref: 'user',
     },
+
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -15,26 +16,30 @@ const conversationSchema = mongoose.Schema(
         ref: 'user',
       },
     ],
+
     lastMessage: {
       dateTime: {
         type: Date,
-        require: true,
+        required: true,
       },
       message: {
         type: String,
+        required: true
       },
       senderName: {
         type: String,
+        required: true
       },
-      senderImage: {
-        type: String,
-      },
+      // senderImage: {
+      //   type: String,
+      // },
       senderId: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true,
       },
       hasRead: {
         type: Boolean,
-        require: true,
+        required: true,
         default: false,
       },
     },

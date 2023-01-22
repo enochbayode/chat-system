@@ -26,9 +26,9 @@ const messageSchema = mongoose.Schema(
           senderName: {
             type: String,
           },
-          senderImage: {
-            type: String,
-          },
+          // senderImage: {
+          //   type: String,
+          // },
           senderId: {
             type: mongoose.Schema.Types.ObjectId,
           },
