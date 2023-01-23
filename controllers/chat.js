@@ -52,7 +52,7 @@ const conversate = async (req, res) => {
         // creating a new converation if there's none existing
         if (!conversation) {
           const newConvo = new Conversation({
-            users: [user._id],
+            users: [user._id, reciever._id],
             reciever: reciever._id,
             _id: new mongoose.Types.ObjectId(),
           });
