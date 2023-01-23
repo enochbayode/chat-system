@@ -59,7 +59,6 @@ class Auth {
 
             req.user = user
            
-
             next();
         } catch (error) {
             error = "INVALID_TOKEN_ERROR";

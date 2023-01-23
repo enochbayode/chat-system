@@ -28,14 +28,11 @@ const conversationSchema = mongoose.Schema(
       },
       senderName: {
         type: String,
-        required: true
+        // required: true
       },
-      // senderImage: {
-      //   type: String,
-      // },
       senderId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        // required: true,
       },
       hasRead: {
         type: Boolean,

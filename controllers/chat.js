@@ -1,8 +1,9 @@
 const { User } = require("../models/user");
-const { Notification } = require('../models/notification');
 const { Message } = require("../models/message");
 const { Conversation } = require("../models/conversation");
 const { Utils } = require("../middlewares/utils");
+const { socketIo } = require("../app");
+const { mongoose } = require("mongoose");
 
 // instantiating the middlewares
 const utils = new Utils();
@@ -17,11 +18,8 @@ const getConversations = async (req, res) => {
       // querying the clinks from the databse
       const conversations = await Conversation.find({ users: user._id })
         .sort({ createdAt: -1 })
-        .populate('partner users')
+        .populate('reciever')
         .exec();
-  
-      // generating the user JWT
-      const token = auth.generateAuthToken(user);
   
       //   returning response
       return res.status(200).json({
@@ -31,29 +29,31 @@ const getConversations = async (req, res) => {
       });
 
     } catch (error) {
-      res.status(500).json({
-        status: false,
-        message: "You've got some errors.",
-        error: utils.getMessage("UNKNOWN_ERROR"),
-      });
+        console.log(error)
+      // res.status(500).json({
+      //   status: false,
+      //   message: "You've got some errors.",
+      //   error: utils.getMessage("UNKNOWN_ERROR"),
+      // });
     }
 };
 
 const conversate = async (req, res) => {
     const user = req.user;
-    
+    const reciever = req.user
+
     try {
         // checking if there exists a previous conversation 
   
         const conversation = await Conversation.findOne({
-          users: { $all: [user._id, receiver._id] },
+          users: { $all: [user._id, reciever._id] },
         });
   
         // creating a new converation if there's none existing
         if (!conversation) {
           const newConvo = new Conversation({
-            users: [user._id, receiver._id],
-            receiver: receiver._id,
+            users: [user._id],
+            reciever: reciever._id,
             _id: new mongoose.Types.ObjectId(),
           });
   
@@ -61,43 +61,21 @@ const conversate = async (req, res) => {
           const chat = new Message({
             _id: new mongoose.Types.ObjectId(),
             convId: newConvo._id,
-            messages: [body],
+            messages: req.body,
           });
   
           const message = await chat.save();
   
           newConvo.lastMessage = {
             dateTime: message.messages[0].dateTime,
-            message: body.message,
-            senderName: body.senderName,
-            senderId: body.senderId,
-            // senderImage: body.senderImage,
+            ...req.body,
             hasRead: false,
           };
   
           const convo = await newConvo.save();
   
           // emmiting a socket for the message event
-          socket.emit('message');
-  
-          // creating a notification object
-          const notification = new Notification({
-            _id: new mongoose.Types.ObjectId(),
-            title: `Direct Message from ${user.name}`,
-            body: `${body.message ? body.message : 'Some media file'}`,
-            user: user._id,
-            owner: receiver._id,
-            category: 'message',
-          });
-  
-          // saving the notification
-          await notification.save();
-  
-          //sending a push notification
-          utils.sendPushNotification(partner._id, notification);
-  
-          // generating the user JWT
-          var token = auth.generateAuthToken(user);
+          socketIo.emit('message');
   
           //   returning response
           return res.status(201).json({
@@ -105,7 +83,7 @@ const conversate = async (req, res) => {
             message: 'MESSAGE_SUCCESS',
             messages: message,
             conversation: convo,
-            token: token,
+            // token: token,
           });
         }
         
@@ -185,6 +163,6 @@ const conversate = async (req, res) => {
 module.exports = {
     getConversations,
     conversate,
-    sendMessage,
-    getLastMessage
+    // sendMessage,
+    // getLastMessage
 }

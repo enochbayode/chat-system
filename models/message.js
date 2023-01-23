@@ -18,17 +18,14 @@ const messageSchema = mongoose.Schema(
           message: {
             type: String,
           },
-          media: [
-            {
-              type: String,
-            },
-          ],
+          // media: [
+          //   {
+          //     type: String,
+          //   },
+          // ],
           senderName: {
             type: String,
           },
-          // senderImage: {
-          //   type: String,
-          // },
           senderId: {
             type: mongoose.Schema.Types.ObjectId,
           },
