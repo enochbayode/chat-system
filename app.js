@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8800;
 const dbURI = process.env.MONGO_URI;
+// const cors = require("cors");
 // const { Message } = require('./models/message');
 // const { Conversation } = require('./models/conversation');
 
@@ -12,11 +13,11 @@ app.use(express.json());
 app.use(express.raw());
 app.use(express.static("./public"));
 app.use(express.static("./uploads"));
-// app.use(require("cors")());
+app.use(require("cors")());
 
 require("./router")(app);
 
-const http = require("http").Server(app); 
+const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const socket = new Server(http, {
   cors: {
@@ -25,7 +26,6 @@ const socket = new Server(http, {
   allowEIO3: true,
 });
 
-// Everything relating to the web socket components
 socket.on('connection', (sio) => {
   console.log('a user connected');
 
@@ -34,30 +34,7 @@ socket.on('connection', (sio) => {
   sio.on('disconnect', () => {
     console.log('user disconnected');
   });
-
-  // sio.on('get message', async ({ convId }) => {
-  //   // getting the conversation from the databa
-  //   var conversation = await Conversation.findById(convId);
-
-  //   // validating that the conversation exits
-  //   if (!conversation) {
-  //     return;
-  //   }
-
-  //   if (conversation.lastMessage.hasRead === false) {
-  //     // querying the messages relating to the conversation from the databse
-  //     const message = await Message.findOne({
-  //       convId: conversation._id,
-  //     }).populate('convId');
-
-  //     if (message.convId.lastMessage.hasRead === false) {
-  //       socket
-  //         .to(sio.id)
-  //         .emit('send message', { message: message.messages[0] });
-  //     }
-  //   }
-  // });
-});
+})
 
 // 404 Error Handler
 app.all("*", (req, res) => {
@@ -93,8 +70,8 @@ mongoose
 });
 
 
+// module.exports = { socket };
 
-
-module.exports = { app };
+module.exports = { app, socket};
 
 require('./router')(app);

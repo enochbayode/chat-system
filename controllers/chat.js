@@ -2,7 +2,7 @@ const { User } = require("../models/user");
 const { Message } = require("../models/message");
 const { Conversation } = require("../models/conversation");
 const { Utils } = require("../middlewares/utils");
-const { socketIo } = require("../app");
+const { socket } = require("../app");
 const { mongoose } = require("mongoose");
 
 // instantiating the middlewares
@@ -30,11 +30,11 @@ const getConversations = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-      // res.status(500).json({
-      //   status: false,
-      //   message: "You've got some errors.",
-      //   error: utils.getMessage("UNKNOWN_ERROR"),
-      // });
+        res.status(500).json({
+          status: false,
+          message: "You've got some errors.",
+          error: utils.getMessage("UNKNOWN_ERROR"),
+        });
     }
 };
 
@@ -48,7 +48,10 @@ const conversate = async (req, res) => {
         const conversation = await Conversation.findOne({
           users: { $all: [user._id, reciever._id] },
         });
-  
+        
+        console.log("userID:", user._id);
+        console.log("recieverID:", reciever._id);
+
         // creating a new converation if there's none existing
         if (!conversation) {
           const newConvo = new Conversation({
@@ -75,7 +78,7 @@ const conversate = async (req, res) => {
           const convo = await newConvo.save();
   
           // emmiting a socket for the message event
-          socketIo.emit('message');
+          socket.emit('message');
   
           //   returning response
           return res.status(201).json({
@@ -83,7 +86,6 @@ const conversate = async (req, res) => {
             message: 'MESSAGE_SUCCESS',
             messages: message,
             conversation: convo,
-            // token: token,
           });
         }
         
