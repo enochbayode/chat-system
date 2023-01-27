@@ -17,21 +17,21 @@ app.use(require("cors")());
 
 require("./router")(app);
 
-const http = require('http').createServer(app);
-const { Server } = require('socket.io');
-const socket = new Server(http, {
-  cors: {
-    origins: '*',
-  },
-  allowEIO3: true,
-});
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+// const socket = new Server(http, {
+//   cors: {
+//     origins: '*',
+//   },
+//   allowEIO3: true,
+// });
 
-socket.on('connection', (sio) => {
+io.on('connection', socket => {
   console.log('a user connected');
 
-  socket.to(sio.id).emit('connected');
+  socket.to(io.id).emit('connected');
 
-  sio.on('disconnect', () => {
+  io.on('disconnect', () => {
     console.log('user disconnected');
   });
 })
@@ -72,6 +72,6 @@ mongoose
 
 // module.exports = { socket };
 
-module.exports = { app, socket};
+module.exports = { app, io};
 
 require('./router')(app);

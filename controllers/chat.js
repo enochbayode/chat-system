@@ -2,7 +2,7 @@ const { User } = require("../models/user");
 const { Message } = require("../models/message");
 const { Conversation } = require("../models/conversation");
 const { Utils } = require("../middlewares/utils");
-const { socket } = require("../app");
+const { io } = require("../app");
 const { mongoose } = require("mongoose");
 
 // instantiating the middlewares
@@ -15,8 +15,8 @@ const getConversations = async (req, res) => {
     const user = req.user;
   
     try {
-      // querying the clinks from the databse
-      const conversations = await Conversation.find({ users: user._id })
+      
+      const conversations = await Conversation.find({ })
         .sort({ createdAt: -1 })
         .populate('reciever')
         .exec();
@@ -25,9 +25,9 @@ const getConversations = async (req, res) => {
       return res.status(200).json({
         status: true,
         message: 'QUERY_SUCCESS',
-        conversations: conversations,
+        conversations: conversations
       });
-
+        
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -38,68 +38,121 @@ const getConversations = async (req, res) => {
     }
 };
 
-const conversate = async (req, res) => {
-    const user = req.user;
-    const reciever = req.user
+const conversate = async(req, res) => {
+  const user = req.user;
+  const reciever = req.user
+  try {
+      // if (!conversations) {
+      // creating the message object
+      const newConvo = new Conversation({
+        users: [user._id, reciever._id],
+        reciever: reciever._id,
+        _id: new mongoose.Types.ObjectId(),
+      });
 
-    try {
+      const chat = new Message({
+        _id: new mongoose.Types.ObjectId(),
+        convId: newConvo._id,
+        messages: req.body,
+      });
+
+      const message = await chat.save();
+
+      newConvo.lastMessage = {
+        dateTime: message.messages[0].dateTime,
+        ...req.body,
+        hasRead: false,
+      };
+    // }
+
+    // const message = await chat.save();
+
+    newConvo.lastMessage = {
+      dateTime: message.messages[0].dateTime,
+      ...req.body,
+      hasRead: false,
+    };
+
+    const convo = await newConvo.save();
+
+    // emmiting a socket for the message event
+    io.emit('message');
+
+    //   returning response
+    return res.status(201).json({
+      status: true,
+      message: 'MESSAGE_SUCCESS',
+      messages: message,
+      conversation: convo,
+    });
+  } catch (error) {
+    console.log("An error occur")
+    console.log(error)
+  }
+}
+
+// const conversate = async (req, res) => {
+//     const user = req.user;
+//     const reciever = req.user
+
+//     try {
         // checking if there exists a previous conversation 
   
-        const conversation = await Conversation.findOne({
-          users: { $all: [user._id, reciever._id] },
-        });
+        // const conversation = await Conversation.findOne({
+        //   users: { $all: [user._id, reciever._id] },
+        // });
         
-        console.log("userID:", user._id);
-        console.log("recieverID:", reciever._id);
+        // console.log("userID:", user._id);
+        // console.log("recieverID:", reciever._id);
 
         // creating a new converation if there's none existing
-        if (!conversation) {
-          const newConvo = new Conversation({
-            users: [user._id, reciever._id],
-            reciever: reciever._id,
-            _id: new mongoose.Types.ObjectId(),
-          });
+//         if (!conversation) {
+//           const newConvo = new Conversation({
+//             users: [user._id, reciever._id],
+//             reciever: reciever._id,
+//             _id: new mongoose.Types.ObjectId(),
+//           });
   
-          // creating the message object
-          const chat = new Message({
-            _id: new mongoose.Types.ObjectId(),
-            convId: newConvo._id,
-            messages: req.body,
-          });
+//           // creating the message object
+//           const chat = new Message({
+//             _id: new mongoose.Types.ObjectId(),
+//             convId: newConvo._id,
+//             messages: req.body,
+//           });
   
-          const message = await chat.save();
+//           const message = await chat.save();
   
-          newConvo.lastMessage = {
-            dateTime: message.messages[0].dateTime,
-            ...req.body,
-            hasRead: false,
-          };
+//           newConvo.lastMessage = {
+//             dateTime: message.messages[0].dateTime,
+//             ...req.body,
+//             hasRead: false,
+//           };
   
-          const convo = await newConvo.save();
+//           const convo = await newConvo.save();
   
-          // emmiting a socket for the message event
-          socket.emit('message');
+//           // emmiting a socket for the message event
+//           socket.emit('message');
   
-          //   returning response
-          return res.status(201).json({
-            status: true,
-            message: 'MESSAGE_SUCCESS',
-            messages: message,
-            conversation: convo,
-          });
-        }
+//           //   returning response
+//           return res.status(201).json({
+//             status: true,
+//             message: 'MESSAGE_SUCCESS',
+//             messages: message,
+//             conversation: convo,
+//           });
+//         }
         
-      } catch (error) {
-        console.log(error);
+//       } catch (error) {
+//         console.log(error);
 
-        return res.status(500).json({
-          status: false,
-          message: "You've got some errors.",
-          error: error,
-        });
+//         return res.status(500).json({
+//           status: false,
+//           message: "You've got some errors.",
+//           error: error,
+//         });
        
-      }
-}
+//       }
+// }
 
 
 
