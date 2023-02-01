@@ -76,7 +76,7 @@ const conversate = async(req, res) => {
     const convo = await newConvo.save();
 
     // emmiting a socket for the message event
-    io.emit('message');
+    // io.emit('message');
 
     //   returning response
     return res.status(201).json({
